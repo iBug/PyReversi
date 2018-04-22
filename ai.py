@@ -1,7 +1,6 @@
 # File: ai.py
 # Author: iBug
 
-
 import math
 import random
 
@@ -25,14 +24,18 @@ SCORE = [
 
 BONUS = 30
 LIBERTY = 8
+STABILITY = [2, 4, 6, 10, 15]
 
 AICONFIG = [
-    (1, 4),
-    (2, 6),
-    (3, 8),
-    (4, 12),
-    (6, 16),
-    (8, 18)
+    (1, 4, 0),
+    (2, 6, 1),
+    (3, 6, 1),
+    (3, 8, 2),
+    (4, 10, 2),
+    (4, 12, 3),
+    (6, 14, 3),
+    (6, 16, 4),
+    (8, 18, 4)
 ]
 
 class Reversi_AI:
@@ -41,11 +44,49 @@ class Reversi_AI:
         self.depth = 6
         self.maxDepth = None
         self.final = 16
-        self.aiLevel = 3
+        self.aiLevel = 8
+        self.heuristicEval = [
+            self.heuristicEval_0,
+            self.heuristicEval_1,
+            self.heuristicEval_2,
+            self.heuristicEval_3,
+            self.heuristicEval_4
+        ]
         self.setLevel()
 
 
-    def heuristicScore(self, game, player):
+    def heuristicEval_0(self, game, player):
+        _, s1, s2 = game.chessCount
+        return s1 - s2
+
+
+    def heuristicEval_1(self, game, player):
+        scores = [0, 0, 0]
+        for x in range(BS):
+            for y in range(BS):
+                if (x == 0 or x == BS - 1) and (y == 0 or y == BS - 1):
+                    scores[game.board[x][y]] += 5
+                elif (x == 0 or x == BS - 1) or (y == 0 or y == BS - 1):
+                    scores[game.board[x][y]] += 2
+                else:
+                    scores[game.board[x][y]] += 1
+        return s[1] - s[2]
+
+    def heuristicEval_2(self, game, player):
+        return self.heuristicEval_1(game, player) * 2 + len(game.getAvailables(BLACK)) - len(game.getAvailables(WHITE))
+
+
+    def heuristicEval_3(self, game, player):
+        s = [0, 0, 0]
+        for x in range(BS):
+            for y in range(BS):
+                s[game.board[x][y]] += STABILITY[self.stability(game, (x, y))]
+        s[1] += len(game.getAvailables(BLACK))
+        s[2] += len(game.getAvailables(WHITE))
+        return s[1] - s[2]
+
+
+    def heuristicEval_4(self, game, player):
         self.nodeCount += 1
         c1, c2, s1, s2 = 0, 0, 0, 0
         board = game.board
@@ -120,6 +161,34 @@ class Reversi_AI:
         checkCorner((BS - 1, BS - 1), [(BS - 2, BS - 2), (BS - 2, BS - 1), (BS - 1, BS - 2)], (-1, -1))
 
         return s1 - s2
+
+
+    def stability(self, game, pos):
+        board = game.board
+        x, y = pos
+        chess = board[x][y]
+        if chess == EMPTY:
+            return 0
+        other = [None, WHITE, BLACK]
+        dx = [(0, 0), (-1, 1), (-1, 1), (1, -1)]
+        dy = [(-1, 1), (0, 0), (-1, 1), (-1, 1)]
+
+        degree = 0
+        for k in range(4):
+            tx = [x, x]
+            ty = [y, y]
+            for i in range(2):
+                while 0 <= tx[i] + dx[k][i] < 8 and 0 <= ty[i] + dy[k][i] < 8 and \
+                        board[tx[i] + dx[k][i]][ty[i] + dy[k][i]] == chess:
+                    tx[i] += dx[k][i]
+                    ty[i] += dy[k][i]
+            if not (0 <= tx[0] + dx[k][0] < 8 and 0 <= ty[0] + dy[k][0] < 8) or \
+                    not (0 <= tx[1] + dx[k][1] < 8 and 0 <= ty[1] + dy[k][1] < 8):
+                degree += 1
+            elif board[tx[0] + dx[k][0]][ty[0] + dy[k][0]] == other[chess] and \
+                    board[tx[1] + dx[k][1]][ty[1] + dy[k][1]] == other[chess]:
+                degree += 1
+        return degree
 
 
     def exactScore(self, game, player):
@@ -235,7 +304,8 @@ class Reversi_AI:
             level = self.aiLevel
 
         self.aiLevel = level
-        self.depth, self.final = AICONFIG[level]
+        self.depth, self.final, evalLevel = AICONFIG[level]
+        self.heuristicScore = self.heuristicEval[evalLevel]
 
 
     def findBestStep(self, game):
