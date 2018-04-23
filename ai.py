@@ -61,15 +61,15 @@ class Reversi_AI:
 
 
     def heuristicEval_1(self, game, player):
-        scores = [0, 0, 0]
+        s = [0, 0, 0]
         for x in range(BS):
             for y in range(BS):
                 if (x == 0 or x == BS - 1) and (y == 0 or y == BS - 1):
-                    scores[game.board[x][y]] += 5
+                    s[game.board[x][y]] += 5
                 elif (x == 0 or x == BS - 1) or (y == 0 or y == BS - 1):
-                    scores[game.board[x][y]] += 2
+                    s[game.board[x][y]] += 2
                 else:
-                    scores[game.board[x][y]] += 1
+                    s[game.board[x][y]] += 1
         return s[1] - s[2]
 
     def heuristicEval_2(self, game, player):
@@ -274,7 +274,8 @@ class Reversi_AI:
                 rscore, rstep = self.exactSearch(game, player, depth - 1, alpha, beta)
                 game.undo()
                 if depth == self.maxDepth - 1:
-                    print(maxMode, rscore)
+                    pass
+                    #print(maxMode, rscore)
 
                 if maxMode:
                     if rscore > score:
