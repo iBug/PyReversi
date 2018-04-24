@@ -40,6 +40,7 @@ class ReversiUI(QWidget):
         self.scoreLabel.setFont(QFont("Arial", 24, QFont.Bold))
 
         self.reset_button = QPushButton("Reset")
+        self.undo_button = QPushButton("Undo")
         self.diffBox = QComboBox()
         self.diffBox.addItems([
             "1: Stupid", "2: Easy", "3: Easy+",
@@ -47,10 +48,12 @@ class ReversiUI(QWidget):
             "7: Expert", "8: Extreme", "9: TaoKY"
         ])
         self.hbox.addWidget(self.diffBox)
+        self.hbox.addWidget(self.undo_button)
         self.hbox.addWidget(self.reset_button)
 
         # Add events
         self.reset_button.clicked.connect(self.resetGame)
+        self.undo_button.clicked.connect(self.undoGame)
         def boardClick(event):
             ex, ey = event.x(), event.y()
             gx, gy = (ex - margin) // GRID_SIZE, (ey - margin) // GRID_SIZE
@@ -79,13 +82,13 @@ class ReversiUI(QWidget):
         if not self.game.canPut(x, y):
             return
         self.game.put(x, y)
-        self.update_board()
+        self.update_ui(True)
         while not self.humanTurn:
             aiMove = self.ai.findBestStep(self.game)
             if aiMove == ():
                 break
             self.game.put(aiMove)
-            self.update_board()
+            self.update_ui(True)
         if self.game.over:
             sa, sb, sc = game.chessCount
             if sb > sc:
@@ -105,12 +108,21 @@ class ReversiUI(QWidget):
         self.painter.assignBoard(self.game.board)
         self.painter.update()
 
-    def update_ui(self):
+    def update_ui(self, force=False):
         self.update_board()
+        if force:
+            QApplication.instance().processEvents()
 
     def resetGame(self):
         self.game.reset()
         self.update_ui()
+
+    def undoGame(self):
+        while True:
+            r = self.game.undo()
+            if self.humanTurn or not r:
+                break
+        self.update_ui(True)
 
 
 class PaintArea(QWidget):
