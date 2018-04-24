@@ -83,14 +83,14 @@ class ReversiUI(QWidget):
             return
         self.game.put(x, y)
         self.update_ui(True)
-        while not self.humanTurn:
-            aiMove = self.ai.findBestStep(self.game)
+        while not self.humanTurn and not self.game.over:
+            aiMove = self.ai.findBestStep(self.game.copy())
             if aiMove == ():
                 break
             self.game.put(aiMove)
             self.update_ui(True)
         if self.game.over:
-            sa, sb, sc = game.chessCount
+            sa, sb, sc = self.game.chessCount
             if sb > sc:
                 QMessageBox.information(self, "iBug Reversi", "You Win!")
             elif sb < sc:

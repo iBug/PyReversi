@@ -137,6 +137,8 @@ class Reversi:
         changes.append((x, y))
         self.history.append(changes)
         self.toggle()
+        if not self.any():
+            self.toggle()
         return True
 
     
@@ -163,6 +165,13 @@ class Reversi:
             self.board[x][y] = EMPTY
         self.toggle()
         return True
+
+    def copy(self):
+        game = Reversi()
+        game.board = [list(col) for col in self.board]
+        game.history = [list(h) for h in self.history]
+        game.current = self.current
+        return game
 
 
     def __repr__(self):
