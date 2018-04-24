@@ -84,7 +84,11 @@ class ReversiUI(QWidget):
         self.game.put(x, y)
         self.update_ui(True)
         while not self.humanTurn and not self.game.over:
+            if self.game.skipPut():
+                break
+            print("ai moving:")
             aiMove = self.ai.findBestStep(self.game.copy())
+            print("aiMove: {}".format(aiMove))
             if aiMove == ():
                 break
             self.game.put(aiMove)

@@ -1,0 +1,18 @@
+sudo: false
+language: python
+python: 3.6
+
+cache:
+  directories:
+    - $HOME/virtualenv/python3.6.*
+    - $HOME/.cache/pip
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+  - rm -rf $HOME/.cache/pip/http
+
+
+install:
+  - pip3 install pytest pytest-cov
+
+script:
+  - true  # This is a placeholder

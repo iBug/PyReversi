@@ -137,8 +137,7 @@ class Reversi:
         changes.append((x, y))
         self.history.append(changes)
         self.toggle()
-        if not self.any():
-            self.toggle()
+        self.skipPut()
         return True
 
     
@@ -158,11 +157,14 @@ class Reversi:
         lastPlayer = [WHITE, BLACK][len(self.history) % 2]
         lastFlip = [BLACK, WHITE][lastPlayer == BLACK]
         lastOp = self.history.pop()
-        if len(lastOp) > 0:
-            for x, y in lastOp:
-                self.board[x][y] = lastFlip
-            x, y = lastOp[-1]
-            self.board[x][y] = EMPTY
+        if len(lastOp) == 0:
+            self.toggle()
+            return self.undo()
+
+        for x, y in lastOp:
+            self.board[x][y] = lastFlip
+        x, y = lastOp[-1]
+        self.board[x][y] = EMPTY
         self.toggle()
         return True
 
