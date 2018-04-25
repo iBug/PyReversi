@@ -6,9 +6,9 @@ import reversi
 import ai
 
 
-BOARD_SIZE = 680
-GRID_SIZE = 80
-PIECE_SIZE = 60
+BOARD_SIZE = 520
+GRID_SIZE = 60
+PIECE_SIZE = 45
 margin = (BOARD_SIZE - 8 * GRID_SIZE) // 2  # Should be some 20
 padding = (GRID_SIZE - PIECE_SIZE) // 2  # Should be some 10
 
@@ -141,7 +141,7 @@ class PaintArea(QWidget):
         self.setAutoFillBackground(True)
         self.setMinimumSize(BOARD_SIZE, BOARD_SIZE)
 
-        self.penConfig = Qt.black, 3, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin)
+        self.penConfig = [Qt.black, 2, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin)]
         brushStyle = Qt.SolidPattern
         brushColorFrame = QFrame()
         brushColorFrame.setAutoFillBackground(True)
@@ -156,9 +156,10 @@ class PaintArea(QWidget):
         if self.board is None:
             raise ValueError("Cannot paint an empty board!")
         p = QPainter(self)
+
+        self.penConfig[0] = Qt.blue
         p.setPen(QPen(*self.penConfig))
         p.setBrush(QBrush(*self.brushConfig))
-
         # Draw the grids
         for i in range(9):
             A = QPoint(margin, margin + i * GRID_SIZE)
@@ -168,6 +169,8 @@ class PaintArea(QWidget):
             B = QPoint(margin + i * GRID_SIZE, BOARD_SIZE - margin)
             p.drawLine(A, B)
 
+        self.penConfig[0] = Qt.black
+        p.setPen(QPen(*self.penConfig))
         # Draw game pieces
         for i in range(8):
             for j in range(8):
