@@ -101,7 +101,7 @@ class Reversi_AI:
                         tx, ty = x + dx, y + dy
                         if 0 <= tx < BS and 0 <= ty < BS and board[tx][ty] == EMPTY:
                             liberty += 1
-                if chess == player:
+                if chess == BLACK:
                     c1 += 1
                     s1 += SCORE[x][y] - liberty * LIBERTY
                 else:
@@ -130,7 +130,7 @@ class Reversi_AI:
                     chess = board[cx][cy]
                     if chess == EMPTY:
                         continue
-                    if chess == player:
+                    if chess == BLACK:
                         s1 -= SCORE[cx][cy]
                     else:
                         s2 -= SCORE[cx][cy]
@@ -140,7 +140,7 @@ class Reversi_AI:
                     tx += dx
                     if board[tx][ty] != chess:
                         break
-                    if player == chess:
+                    if chess == BLACK:
                         s1 += BONUS
                     else:
                         s2 += BONUS
@@ -150,7 +150,7 @@ class Reversi_AI:
                     ty += dy
                     if board[tx][ty] != chess:
                         break
-                    if player == chess:
+                    if chess == BLACK:
                         s1 += BONUS
                     else:
                         s2 += BONUS
@@ -199,8 +199,6 @@ class Reversi_AI:
             score = inf
         elif ccBlack < ccWhite:
             score = -inf
-        if player == WHITE:
-            score = -score
         return score
 
 
@@ -215,7 +213,7 @@ class Reversi_AI:
         if depth <= 0:
             return self.heuristicScore(game, player), ()
 
-        maxMode = (game.current == player)
+        maxMode = (game.current == BLACK)
         score = -inf-1 if maxMode else inf+1
         steps = game.getAvailables()
         bestStep = ()
@@ -263,7 +261,7 @@ class Reversi_AI:
         if depth <= 0:
             return self.exactScore(game, player), ()
 
-        maxMode = (game.current == player)
+        maxMode = (game.current == BLACK)
         score = -inf-1 if maxMode else inf+1
         steps = game.getAvailables()
         bestStep = ()

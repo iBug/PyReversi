@@ -152,21 +152,21 @@ class Reversi:
 
     def undo(self):
         if len(self.history) == 0:
-            return False
+            return False, 0
 
         lastPlayer = [WHITE, BLACK][len(self.history) % 2]
         lastFlip = [BLACK, WHITE][lastPlayer == BLACK]
         lastOp = self.history.pop()
         if len(lastOp) == 0:
             self.toggle()
-            return self.undo()
+            return True, 0
 
         for x, y in lastOp:
             self.board[x][y] = lastFlip
         x, y = lastOp[-1]
         self.board[x][y] = EMPTY
         self.toggle()
-        return True
+        return True, len(lastOp)
 
     def copy(self):
         game = Reversi()

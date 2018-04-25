@@ -123,7 +123,10 @@ class ReversiUI(QWidget):
 
     def undoGame(self):
         while True:
-            r = self.game.undo()
+            r, c = self.game.undo()
+            if c == 0 and r:
+                # The last operation is a skip
+                continue
             if self.humanTurn or not r:
                 break
         self.update_ui(True)
