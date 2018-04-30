@@ -15,4 +15,4 @@ install:
   - pip3 install pytest pytest-cov
 
 script:
-  - true  # This is a placeholder
+  - python3 -W default::Warning -m pytest --cov=reversi
