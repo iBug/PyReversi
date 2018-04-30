@@ -9,8 +9,10 @@ import ai
 BOARD_SIZE = 520
 GRID_SIZE = 60
 PIECE_SIZE = 45
+DOT_SIZE = 10
 margin = (BOARD_SIZE - 8 * GRID_SIZE) // 2  # Should be some 20
 padding = (GRID_SIZE - PIECE_SIZE) // 2  # Should be some 10
+d_padding = (GRID_SIZE - DOT_SIZE) // 2  # Should be some 25
 
 
 class ReversiUI(QWidget):
@@ -110,6 +112,16 @@ class ReversiUI(QWidget):
     def update_board(self):
         self.scoreLabel.setText(self.score_str.format(*self.game.chessCount))
         self.painter.assignBoard(self.game.board)
+        if self.humanTurn:
+            self.painter.assignDots(self.game.getAvailables())
+            lastChess = self.game.lastChess
+            if lastChess is not None:
+                self.painter.assignSpecialDots([lastChess])
+            else:
+                self.painter.assignSpecialDots(None)
+        else:
+            self.painter.assignDots(None)
+            self.painter.assignSpecialDots(None)
         self.painter.update()
 
     def update_ui(self, force=False):
@@ -136,12 +148,15 @@ class PaintArea(QWidget):
     def __init__(self, board=None):
         super(PaintArea, self).__init__()
         self.board = board
+        self.dots = None
+        self.spdots = None
 
         self.setPalette(QPalette(Qt.white))
         self.setAutoFillBackground(True)
         self.setMinimumSize(BOARD_SIZE, BOARD_SIZE)
 
         self.penConfig = [Qt.black, 2, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin)]
+        self.noPen = QPen(Qt.black, 2, Qt.PenStyle(Qt.NoPen), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
         brushStyle = Qt.SolidPattern
         brushColorFrame = QFrame()
         brushColorFrame.setAutoFillBackground(True)
@@ -151,6 +166,12 @@ class PaintArea(QWidget):
 
     def assignBoard(self, board):
         self.board = [list(i) for i in board]
+
+    def assignDots(self, dots):
+        self.dots = dots
+
+    def assignSpecialDots(self, dots):
+        self.spdots = dots
 
     def paintEvent(self, QPaintEvent):
         if self.board is None:
@@ -181,3 +202,21 @@ class PaintArea(QWidget):
                 p.drawEllipse(QRect(
                     margin + padding + i * GRID_SIZE, margin + padding + j * GRID_SIZE,
                     PIECE_SIZE, PIECE_SIZE))
+
+        # Draw indicative dots if available
+        if self.dots is not None:
+            p.setPen(self.noPen)
+            p.setBrush(QBrush(Qt.blue, Qt.SolidPattern))
+            for x, y in self.dots:
+                p.drawEllipse(QRect(
+                    margin + d_padding + x * GRID_SIZE, margin + d_padding + y * GRID_SIZE,
+                    DOT_SIZE, DOT_SIZE))
+
+        # Draw special dots if available
+        if self.spdots is not None:
+            p.setPen(self.noPen)
+            p.setBrush(QBrush(Qt.red, Qt.SolidPattern))
+            for x, y in self.spdots:
+                p.drawEllipse(QRect(
+                    margin + d_padding + x * GRID_SIZE, margin + d_padding + y * GRID_SIZE,
+                    DOT_SIZE, DOT_SIZE))

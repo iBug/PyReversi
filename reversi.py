@@ -9,7 +9,7 @@ WHITE = 2
 
 class Reversi:
     def __init__(self):
-        self.board = [[EMPTY for _ in range(BS)] for _ in range(BS)]
+        self.board = None
         self.current = None
         self.history = None
         self.reset()
@@ -98,6 +98,13 @@ class Reversi:
     def at(self, x, y):
         return self.board[x][y]
 
+
+    @property
+    def lastChess(self):
+        try:
+            return self.history[-1][-1]
+        except IndexError:
+            return None
 
     @property
     def chessCount(self):
