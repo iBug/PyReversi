@@ -31,6 +31,7 @@ def test_reversi_toggle():
     (2, 4, 1, 0, reversi.WHITE, False),
     (3, 2, 0, 1, reversi.BLACK, False),
     (3, 2, 0, 1, reversi.WHITE, True),
+    (2, 4, 1, 0, None, True),
 ])
 def test_reversi_check(x, y, dx, dy, player, expected):
     game = Reversi()
@@ -41,6 +42,7 @@ def test_reversi_check(x, y, dx, dy, player, expected):
 @pytest.mark.parametrize("x, y, player, expected", [
     (2, 4, reversi.BLACK, True),
     (2, 4, reversi.WHITE, False),
+    (2, 4, None, True),
 ])
 def test_reversi_canPut(x, y, player, expected):
     game = Reversi()
@@ -86,6 +88,14 @@ def test_reversi_at(x, y, expected):
     assert game.at(x, y) == expected
 
 
+def test_reversi_lastChess():
+    game = Reversi()
+    game.reset()
+    assert game.lastChess is None
+    game.put(2, 4)
+    assert game.lastChess == (2, 4)
+
+
 def test_reversi_chessCount():
     game = Reversi()
     game.reset()
@@ -114,7 +124,8 @@ def test_reversi_skipPut():
 
 def test_reversi_undo():
     game_1, game_2 = Reversi(), Reversi()
-    _, _ = game_1.reset(), game_2.reset()
+    game_1.reset()
+    game_2.reset()
     assert game_1.board == game_2.board
     assert game_1.history == game_2.history == []
     assert game_1.undo() == (False, 0)
@@ -124,3 +135,27 @@ def test_reversi_undo():
     assert game_1.undo() == (True, 2)
     assert game_1.board == game_2.board
     assert game_1.history == game_2.history
+
+    game_1.history.append([])
+    game_1.toggle()
+    assert game_1.undo() == (True, 0)
+
+
+def test_reversi_copy():
+    game = Reversi()
+    game.reset()
+    game.put(2, 4)
+    other = game.copy()
+    assert game is not other
+    assert game.board == other.board
+    assert all(a is not b for a, b in zip(game.board, other.board))
+    assert game.current == other.current
+    assert game.history == other.history
+    assert all(a is not b for a, b in zip(game.history, other.history))
+
+
+def test_reversi_repr():
+    game = Reversi()
+    game.reset()
+    assert str(game)
+    assert repr(game)
