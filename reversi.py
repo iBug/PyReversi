@@ -166,7 +166,7 @@ class Reversi:
         lastOp = self.history.pop()
         if len(lastOp) == 0:
             self.toggle()
-            return True, 0
+            return True, self.undo()[1]
 
         for x, y in lastOp:
             self.board[x][y] = lastFlip

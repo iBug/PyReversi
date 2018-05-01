@@ -45,13 +45,6 @@ class Reversi_AI:
         self.maxDepth = None
         self.final = 16
         self.aiLevel = 8
-        self.heuristicEval = [
-            self.heuristicEval_0,
-            self.heuristicEval_1,
-            self.heuristicEval_2,
-            self.heuristicEval_3,
-            self.heuristicEval_4
-        ]
         self.setLevel()
 
 
@@ -271,9 +264,6 @@ class Reversi_AI:
                 game.put(step)
                 rscore, rstep = self.exactSearch(game, player, depth - 1, alpha, beta)
                 game.undo()
-                if depth == self.maxDepth - 1:
-                    pass
-                    #print(maxMode, rscore)
 
                 if maxMode:
                     if rscore > score:
@@ -304,7 +294,7 @@ class Reversi_AI:
 
         self.aiLevel = level
         self.depth, self.final, evalLevel = AICONFIG[level]
-        self.heuristicScore = self.heuristicEval[evalLevel]
+        self.heuristicScore = getattr(self, "heuristicEval_" + str(evalLevel))
 
 
     def findBestStep(self, game):
@@ -317,10 +307,8 @@ class Reversi_AI:
 
         # Random mode
         if cc <= (BS - 4) ** 2:
-            randSteps = []
-            for x, y in steps:
-                if 2 <= x < BS - 2 and 2 <= y < BS - 2:
-                    randSteps.append((x, y))
+            randSteps = [(x, y) for x, y in steps
+                if 2 <= x < BS - 2 and 2 <= y < BS - 2]
             if len(randSteps) > 0:
                 return random.choice(randSteps)
 
