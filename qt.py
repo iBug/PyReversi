@@ -45,9 +45,9 @@ class ReversiUI(QWidget):
         self.undo_button = QPushButton("Undo")
         self.diffBox = QComboBox()
         self.diffBox.addItems([
-            "1: Stupid", "2: Easy", "3: Easy+",
+            "1: Cindy", "2: Easy", "3: Easy+",
             "4: Medium", "5: Medium+", "6: Hard",
-            "7: Expert", "8: Extreme", "9: TaoKY"
+            "7: Hard+", "8: Extreme", "9: TaoKY"
         ])
         self.hbox.addWidget(self.diffBox)
         self.hbox.addWidget(self.undo_button)

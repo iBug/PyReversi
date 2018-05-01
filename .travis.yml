@@ -15,7 +15,7 @@ install:
   - pip3 install pytest pytest-cov python-coveralls
 
 script:
-  - python3 -W default::Warning -m pytest --cov=reversi
+  - python3 -W default::Warning -m pytest test --cov=reversi
 
 after_success:
   - coveralls
