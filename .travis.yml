@@ -1,21 +1,22 @@
 sudo: false
 language: python
-python: 3.6
-
-cache:
-  directories:
-    - $HOME/virtualenv/python3.6.*
-    - $HOME/.cache/pip
-before_cache:
-  - rm -f $HOME/.cache/pip/log/debug.log
-  - rm -rf $HOME/.cache/pip/http
-
-
+python:
+  - '3.6'
+  
 install:
   - pip3 install pytest pytest-cov python-coveralls
 
 script:
   - python3 -W default::Warning -m pytest test --cov=reversi
+
+cache:
+  directories:
+    - $HOME/virtualenv/python3.6.*
+    - $HOME/.cache/pip
+    
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+  - rm -rf $HOME/.cache/pip/http
 
 after_success:
   - coveralls
