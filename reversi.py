@@ -75,12 +75,7 @@ class Reversi:
         if player is None:
             player = self.current
 
-        res = []
-        for x in range(BS):
-            for y in range(BS):
-                if self.canPut(x, y, player):
-                    res.append((x, y))
-        return res
+        return [(x, y) for x in range(BS) for y in range(BS) if self.canPut(x, y, player)]
 
 
     def any(self, player=None):
@@ -183,5 +178,5 @@ class Reversi:
         return game
 
 
-    def __repr__(self):
+    def __str__(self):
         return "\n".join(" ".join([".", "O", "X"][self.board[x][y]] for x in range(BS)) for y in range(BS))

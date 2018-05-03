@@ -20,7 +20,7 @@ class ReversiUI(QWidget):
         self.game = reversi.Reversi()
         self.ai = ai.Reversi_AI()
         self.ai.setLevel(0)
-        self.humanSide = 1
+        self.humanSide = reversi.BLACK
 
         super(ReversiUI, self).__init__()
         self.vbox = QVBoxLayout()
@@ -41,7 +41,7 @@ class ReversiUI(QWidget):
         self.scoreLabel.setAlignment(Qt.AlignCenter)
         self.scoreLabel.setFont(QFont("Arial", 24, QFont.Bold))
 
-        self.reset_button = QPushButton("Reset")
+        self.reset_button = QPushButton("New Game")
         self.undo_button = QPushButton("Undo")
         self.diffBox = QComboBox()
         self.diffBox.addItems([
@@ -49,6 +49,9 @@ class ReversiUI(QWidget):
             "4: Medium", "5: Medium+", "6: Hard",
             "7: Hard+", "8: Extreme", "9: TaoKY"
         ])
+        self.modeBox = QComboBox()
+        self.modeBox.addItems(["I go first", "AI goes first"])
+        self.hbox.addWidget(self.modeBox)
         self.hbox.addWidget(self.diffBox)
         self.hbox.addWidget(self.undo_button)
         self.hbox.addWidget(self.reset_button)
@@ -69,6 +72,11 @@ class ReversiUI(QWidget):
             self.resetGame()
         self.diffBox.currentIndexChanged.connect(diffChange)
 
+        def modeChange(index):
+            self.humanSide = [reversi.BLACK, reversi.WHITE][index]
+            self.resetGame()
+        self.modeBox.currentIndexChanged.connect(modeChange)
+
         self.setLayout(self.vbox)
         self.setWindowTitle("iBug Reversi: PyQt5")
         self.setWindowFlags(Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint | Qt.CustomizeWindowHint)
@@ -76,6 +84,17 @@ class ReversiUI(QWidget):
         self.show()
         self.resetGame()
         self.setFixedSize(self.size())
+
+    def aiMove(self):
+        if self.humanTurn:
+            return
+        print("ai moving:")
+        aiMove = self.ai.findBestStep(self.game.copy())
+        print("aiMove: {}".format(aiMove))
+        if aiMove == ():
+            return
+        self.game.put(aiMove)
+        self.update_ui(True)
 
     def onClickBoard(self, pos):
         if not self.humanTurn:
@@ -88,15 +107,11 @@ class ReversiUI(QWidget):
         while not self.humanTurn and not self.game.over:
             if self.game.skipPut():
                 break
-            print("ai moving:")
-            aiMove = self.ai.findBestStep(self.game.copy())
-            print("aiMove: {}".format(aiMove))
-            if aiMove == ():
-                break
-            self.game.put(aiMove)
-            self.update_ui(True)
+            self.aiMove()
         if self.game.over:
             sa, sb, sc = self.game.chessCount
+            if self.humanSide == reversi.WHITE:
+                sb, sc = sc, sb
             if sb > sc:
                 QMessageBox.information(self, "iBug Reversi", "You Win!")
             elif sb < sc:
@@ -132,6 +147,10 @@ class ReversiUI(QWidget):
     def resetGame(self):
         self.game.reset()
         self.update_ui()
+        while not self.humanTurn and not self.game.over:
+            if self.game.skipPut():
+                break
+            self.aiMove()
 
     def undoGame(self):
         while True:
