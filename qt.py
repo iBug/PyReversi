@@ -57,24 +57,25 @@ class ReversiUI(QWidget):
         self.hbox.addWidget(self.reset_button)
 
         # Add events
-        self.reset_button.clicked.connect(self.resetGame)
-        self.undo_button.clicked.connect(self.undoGame)
         def boardClick(event):
             ex, ey = event.x(), event.y()
             gx, gy = (ex - margin) // GRID_SIZE, (ey - margin) // GRID_SIZE
             rx, ry = ex - margin - gx * GRID_SIZE, ey - margin - gy * GRID_SIZE
-            if 0 <= gx < 8 and 0 <= gy < 8 and abs(rx - GRID_SIZE/2) < PIECE_SIZE/2 > abs(ry - GRID_SIZE/2):
+            if 0 <= gx < 8 and 0 <= gy < 8 and \
+                    abs(rx - GRID_SIZE / 2) < PIECE_SIZE / 2 > abs(ry - GRID_SIZE / 2):
                 self.onClickBoard((gx, gy))
-        self.painter.mouseReleaseEvent = boardClick
 
         def diffChange(index):
             self.ai.setLevel(index)
             self.resetGame()
-        self.diffBox.currentIndexChanged.connect(diffChange)
 
         def modeChange(index):
             self.humanSide = [reversi.BLACK, reversi.WHITE][index]
             self.resetGame()
+        self.reset_button.clicked.connect(self.resetGame)
+        self.undo_button.clicked.connect(self.undoGame)
+        self.painter.mouseReleaseEvent = boardClick
+        self.diffBox.currentIndexChanged.connect(diffChange)
         self.modeBox.currentIndexChanged.connect(modeChange)
 
         self.setLayout(self.vbox)
@@ -118,7 +119,6 @@ class ReversiUI(QWidget):
                 QMessageBox.information(self, "iBug Reversi", "You Lose!")
             elif sb == sc:
                 QMessageBox.information(self, "iBug Reversi", "Tie!")
-
 
     @property
     def humanTurn(self):
@@ -176,7 +176,6 @@ class PaintArea(QWidget):
 
         self.penConfig = [Qt.black, 2, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin)]
         self.noPen = QPen(Qt.black, 2, Qt.PenStyle(Qt.NoPen), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
-        brushStyle = Qt.SolidPattern
         brushColorFrame = QFrame()
         brushColorFrame.setAutoFillBackground(True)
         brushColorFrame.setPalette(QPalette(Qt.white))

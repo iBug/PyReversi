@@ -1,5 +1,3 @@
-import reversi
-import ai
 import qt
 import sys
 from PyQt5.QtWidgets import QApplication

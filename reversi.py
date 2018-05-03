@@ -14,7 +14,6 @@ class Reversi:
         self.history = None
         self.reset()
 
-
     def reset(self):
         self.board = [[EMPTY for _ in range(BS)] for _ in range(BS)]
         self.board[3][3] = self.board[4][4] = BLACK
@@ -22,10 +21,8 @@ class Reversi:
         self.current = BLACK
         self.history = []
 
-
     def toggle(self):
         self.current = [BLACK, WHITE][self.current == BLACK]
-
 
     def check(self, x, y, dx, dy, player=None, operate=False, func=lambda *a: None):
         if player is None:
@@ -58,7 +55,6 @@ class Reversi:
             return True
         return False
 
-
     def canPut(self, x, y, player=None):
         if player is None:
             player = self.current
@@ -66,10 +62,9 @@ class Reversi:
         if self.board[x][y] != EMPTY:
             return False
         return self.check(x, y, -1, -1, player) or self.check(x, y, 1, 1, player) or \
-               self.check(x, y, -1, 0, player) or self.check(x, y, 1, 0, player) or \
-               self.check(x, y, -1, 1, player) or self.check(x, y, 1, -1, player) or \
-               self.check(x, y, 0, -1, player) or self.check(x, y, 0, 1, player)
-
+            self.check(x, y, -1, 0, player) or self.check(x, y, 1, 0, player) or \
+            self.check(x, y, -1, 1, player) or self.check(x, y, 1, -1, player) or \
+            self.check(x, y, 0, -1, player) or self.check(x, y, 0, 1, player)
 
     def getAvailables(self, player=None):
         if player is None:
@@ -77,22 +72,18 @@ class Reversi:
 
         return [(x, y) for x in range(BS) for y in range(BS) if self.canPut(x, y, player)]
 
-
     def any(self, player=None):
         if player is None:
             player = self.current
 
         return any(self.canPut(x, y, player) for x in range(BS) for y in range(BS))
 
-
     @property
     def over(self):
         return (not self.any(BLACK)) and (not self.any(WHITE))
 
-
     def at(self, x, y):
         return self.board[x][y]
-
 
     @property
     def lastChess(self):
@@ -105,12 +96,11 @@ class Reversi:
     def chessCount(self):
         # Relies on EMPTY, BLACK, WHITE == 0, 1, 2
         cc = [0, 0, 0]
-        
+
         for x in range(BS):
             for y in range(BS):
                 cc[self.board[x][y]] += 1
         return cc
-
 
     def put(self, x, y=None, player=None):
         if y is None:
@@ -122,7 +112,10 @@ class Reversi:
             player = self.current
 
         changes = []
-        saveChange = lambda x, y: changes.append((x, y))
+
+        def saveChange(x, y):
+            changes.append((x, y))
+
         self.check(x, y, -1, -1, player, True, saveChange)
         self.check(x, y, 1, 1, player, True, saveChange)
         self.check(x, y, -1, 0, player, True, saveChange)
@@ -131,7 +124,7 @@ class Reversi:
         self.check(x, y, 1, -1, player, True, saveChange)
         self.check(x, y, 0, -1, player, True, saveChange)
         self.check(x, y, 0, 1, player, True, saveChange)
-        
+
         if len(changes) == 0:
             return False
 
@@ -142,7 +135,6 @@ class Reversi:
         self.skipPut()
         return True
 
-    
     def skipPut(self):
         if self.any(self.current):
             return False
@@ -150,7 +142,6 @@ class Reversi:
         self.history.append([])
         self.toggle()
         return True
-
 
     def undo(self):
         if len(self.history) == 0:
@@ -176,7 +167,6 @@ class Reversi:
         game.history = [list(h) for h in self.history]
         game.current = self.current
         return game
-
 
     def __str__(self):
         return "\n".join(" ".join([".", "O", "X"][self.board[x][y]] for x in range(BS)) for y in range(BS))

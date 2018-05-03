@@ -1,7 +1,6 @@
 # File: ai.py
 # Author: iBug
 
-import math
 import random
 
 # import some constants
@@ -38,6 +37,7 @@ AICONFIG = [
     (8, 18, 4)
 ]
 
+
 class Reversi_AI:
     def __init__(self):
         self.nodeCount = 0
@@ -47,11 +47,9 @@ class Reversi_AI:
         self.aiLevel = 8
         self.setLevel()
 
-
     def heuristicEval_0(self, game, player):
         _, s1, s2 = game.chessCount
         return s1 - s2
-
 
     def heuristicEval_1(self, game, player):
         s = [0, 0, 0]
@@ -68,7 +66,6 @@ class Reversi_AI:
     def heuristicEval_2(self, game, player):
         return self.heuristicEval_1(game, player) * 2 + len(game.getAvailables(BLACK)) - len(game.getAvailables(WHITE))
 
-
     def heuristicEval_3(self, game, player):
         s = [0, 0, 0]
         for x in range(BS):
@@ -77,7 +74,6 @@ class Reversi_AI:
         s[1] += len(game.getAvailables(BLACK))
         s[2] += len(game.getAvailables(WHITE))
         return s[1] - s[2]
-
 
     def heuristicEval_4(self, game, player):
         self.nodeCount += 1
@@ -111,7 +107,6 @@ class Reversi_AI:
             if c2 > c1:
                 return -inf
 
-
         def checkCorner(pos, adjacents, dpos):
             nonlocal s1, s2
 
@@ -127,7 +122,7 @@ class Reversi_AI:
                         s1 -= SCORE[cx][cy]
                     else:
                         s2 -= SCORE[cx][cy]
-                
+
                 tx, ty = x, y
                 for i in range(0, BS - 2):
                     tx += dx
@@ -154,7 +149,6 @@ class Reversi_AI:
         checkCorner((BS - 1, BS - 1), [(BS - 2, BS - 2), (BS - 2, BS - 1), (BS - 1, BS - 2)], (-1, -1))
 
         return s1 - s2
-
 
     def stability(self, game, pos):
         board = game.board
@@ -183,7 +177,6 @@ class Reversi_AI:
                 degree += 1
         return degree
 
-
     def exactScore(self, game, player):
         self.nodeCount += 1
         _, ccBlack, ccWhite = game.chessCount
@@ -194,20 +187,18 @@ class Reversi_AI:
             score = -inf
         return score
 
-
     def getHeuristicScore(self, game, player, step):
         game.put(step)
         score = self.heuristicScore(game, player)
         game.undo()
         return score
 
-
     def heuristicSearch(self, game, player, depth, alpha, beta):
         if depth <= 0:
             return self.heuristicScore(game, player), ()
 
         maxMode = (game.current == BLACK)
-        score = -inf-1 if maxMode else inf+1
+        score = -inf - 1 if maxMode else inf + 1
         steps = game.getAvailables()
         bestStep = ()
 
@@ -230,14 +221,14 @@ class Reversi_AI:
                         score, bestStep = rscore, step
                     alpha = max(alpha, score)
                     if alpha >= beta:
-                        #print("%d alpha cut: %d, %d" % (depth ,alpha, beta))
+                        # print("%d alpha cut: %d, %d" % (depth ,alpha, beta))
                         break
                 else:
                     if rscore < score:
                         score, bestStep = rscore, step
                     beta = min(beta, score)
                     if alpha >= beta:
-                        #print("%d beta cut: %d, %d" % (depth, alpha, beta))
+                        # print("%d beta cut: %d, %d" % (depth, alpha, beta))
                         break
         else:
             if not game.over:
@@ -249,13 +240,12 @@ class Reversi_AI:
                 return self.exactScore(game, player), ()
         return score, bestStep
 
-
     def exactSearch(self, game, player, depth, alpha, beta):
         if depth <= 0:
             return self.exactScore(game, player), ()
 
         maxMode = (game.current == BLACK)
-        score = -inf-1 if maxMode else inf+1
+        score = -inf - 1 if maxMode else inf + 1
         steps = game.getAvailables()
         bestStep = ()
 
@@ -287,7 +277,6 @@ class Reversi_AI:
                 return self.exactScore(game, player), ()
         return score, bestStep
 
-
     def setLevel(self, level=None):
         if level is None:
             level = self.aiLevel
@@ -295,7 +284,6 @@ class Reversi_AI:
         self.aiLevel = level
         self.depth, self.final, evalLevel = AICONFIG[level]
         self.heuristicScore = getattr(self, "heuristicEval_" + str(evalLevel))
-
 
     def findBestStep(self, game):
         player = game.current
@@ -308,7 +296,7 @@ class Reversi_AI:
         # Random mode
         if cc <= (BS - 4) ** 2:
             randSteps = [(x, y) for x, y in steps
-                if 2 <= x < BS - 2 and 2 <= y < BS - 2]
+                         if 2 <= x < BS - 2 and 2 <= y < BS - 2]
             if len(randSteps) > 0:
                 return random.choice(randSteps)
 
