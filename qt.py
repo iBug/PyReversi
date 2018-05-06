@@ -10,9 +10,13 @@ BOARD_SIZE = 520
 GRID_SIZE = 60
 PIECE_SIZE = 45
 DOT_SIZE = 10
+IND_SIZE = 128
+IND_BOARD_SIZE = 150
+
 margin = (BOARD_SIZE - 8 * GRID_SIZE) // 2  # Should be some 20
 padding = (GRID_SIZE - PIECE_SIZE) // 2  # Should be some 10
 d_padding = (GRID_SIZE - DOT_SIZE) // 2  # Should be some 25
+ind_margin = (IND_BOARD_SIZE - IND_SIZE) // 2
 
 
 class ReversiUI(QWidget):
@@ -23,23 +27,22 @@ class ReversiUI(QWidget):
         self.humanSide = reversi.BLACK
 
         super(ReversiUI, self).__init__()
-        self.vbox = QVBoxLayout()
-        self.hbox = QHBoxLayout()
-        self.infoBar = QHBoxLayout()
-        self.score_str = "{1} : {2}"
-        self.scoreLabel = QLabel(self.score_str)
+        self.master = QHBoxLayout()
+        self.controlBar = QVBoxLayout()
+        self.infoBar = QVBoxLayout()
+        self.score_str = "{}"
+        self.scoreLabelA = ScoreIndicator(reversi.BLACK)
+        self.scoreLabelB = ScoreIndicator(reversi.WHITE)
         self.painter = PaintArea()
+        self.painter.setFocusPolicy(Qt.StrongFocus)
         self.init_ui()
 
     def init_ui(self):
-        self.vbox.addWidget(self.painter)
-        self.vbox.addLayout(self.infoBar)
-        self.vbox.addLayout(self.hbox)
-        self.infoBar.addWidget(self.scoreLabel)
-
-        self.scoreLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.scoreLabel.setAlignment(Qt.AlignCenter)
-        self.scoreLabel.setFont(QFont("Arial", 24, QFont.Bold))
+        self.master.addLayout(self.controlBar)
+        self.master.addWidget(self.painter)
+        self.controlBar.addLayout(self.infoBar)
+        self.infoBar.addWidget(self.scoreLabelA)
+        self.infoBar.addWidget(self.scoreLabelB)
 
         self.reset_button = QPushButton("New Game")
         self.undo_button = QPushButton("Undo")
@@ -47,14 +50,16 @@ class ReversiUI(QWidget):
         self.diffBox.addItems([
             "1: Cindy", "2: Easy", "3: Easy+",
             "4: Medium", "5: Medium+", "6: Hard",
-            "7: Hard+", "8: Extreme", "9: TaoKY"
+            "7: Hard+", "8: Extreme", "9: Zhao JX"
         ])
         self.modeBox = QComboBox()
         self.modeBox.addItems(["I go first", "AI goes first"])
-        self.hbox.addWidget(self.modeBox)
-        self.hbox.addWidget(self.diffBox)
-        self.hbox.addWidget(self.undo_button)
-        self.hbox.addWidget(self.reset_button)
+        self.controlBar.addWidget(self.modeBox)
+        self.controlBar.addWidget(QSplitter())
+        self.controlBar.addWidget(QLabel("Difficulty"))
+        self.controlBar.addWidget(self.diffBox)
+        self.controlBar.addWidget(self.undo_button)
+        self.controlBar.addWidget(self.reset_button)
 
         # Add events
         def boardClick(event):
@@ -78,7 +83,7 @@ class ReversiUI(QWidget):
         self.diffBox.currentIndexChanged.connect(diffChange)
         self.modeBox.currentIndexChanged.connect(modeChange)
 
-        self.setLayout(self.vbox)
+        self.setLayout(self.master)
         self.setWindowTitle("iBug Reversi: PyQt5")
         self.setWindowFlags(Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint | Qt.CustomizeWindowHint)
 
@@ -125,7 +130,11 @@ class ReversiUI(QWidget):
         return self.humanSide == self.game.current and not self.game.over
 
     def update_board(self):
-        self.scoreLabel.setText(self.score_str.format(*self.game.chessCount))
+        _, ccBlack, ccWhite = self.game.chessCount
+        self.scoreLabelA.setNumber(ccBlack)
+        self.scoreLabelB.setNumber(ccWhite)
+        self.scoreLabelA.update()
+        self.scoreLabelB.update()
         self.painter.assignBoard(self.game.board)
         if self.humanTurn:
             self.painter.assignDots(self.game.getAvailables())
@@ -238,3 +247,37 @@ class PaintArea(QWidget):
                 p.drawEllipse(QRect(
                     margin + d_padding + x * GRID_SIZE, margin + d_padding + y * GRID_SIZE,
                     DOT_SIZE, DOT_SIZE))
+
+
+class ScoreIndicator(QWidget):
+    def __init__(self, color):
+        super(ScoreIndicator, self).__init__()
+        self.color = color
+        self.number = None
+        self.borderPen = QPen(Qt.black, 3, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
+
+        self.setAutoFillBackground(False)
+        self.setMinimumSize(IND_BOARD_SIZE, IND_BOARD_SIZE)
+
+    def setNumber(self, n):
+        self.number = n
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+
+        b = QRect(ind_margin, ind_margin, IND_SIZE, IND_SIZE)
+        if self.color == reversi.BLACK:
+            p.setBrush(QBrush(Qt.black, Qt.SolidPattern))
+        elif self.color == reversi.WHITE:
+            p.setBrush(QBrush(Qt.white, Qt.SolidPattern))
+        else:
+            raise ValueError("Invalid color set!")
+        p.setPen(self.borderPen)
+        p.drawEllipse(b)
+
+        if self.color == reversi.BLACK:
+            p.setPen(QPen(Qt.white, 48))
+        elif self.color == reversi.WHITE:
+            p.setPen(QPen(Qt.black, 48))
+        p.setFont(QFont("Arial", 48, QFont.Bold))
+        p.drawText(b, Qt.AlignCenter, str(self.number))
