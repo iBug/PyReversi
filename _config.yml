@@ -1,0 +1,8 @@
+remote_theme: iBug/aurora-theme
+
+title: PyReversi
+description: A Reversi game with AI
+show_downloads: true
+
+features:
+  love: false
