@@ -3,6 +3,10 @@ __pycache__
 .pytest_cache
 .coverage
 
+# virtualenv
+virtualenv/
+venv/
+
 # pyinstaller
 build
 dist
