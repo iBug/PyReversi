@@ -154,6 +154,18 @@ def test_reversi_copy():
     assert all(a is not b for a, b in zip(game.history, other.history))
 
 
+def test_reversi_hash():
+    import random
+    game = Reversi()
+    s = set()
+    s.add(game)
+    assert len(s) == 1
+    for i in range(12):
+        game.put(random.choice(game.getAvailables()))
+        assert game not in s
+        s.add(game)
+
+
 def test_reversi_repr():
     game = Reversi()
     game.reset()
