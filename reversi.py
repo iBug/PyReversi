@@ -172,10 +172,9 @@ class Reversi:
     def __str__(self):
         return "\n".join(" ".join([".", "O", "X"][self.board[x][y]] for x in range(BS)) for y in range(BS))
 
-
     def __hash__(self):
         res = 0
         for x in range(8):
             for y in range(8):
-                res = (3*res + self.board[x][y]) % HASH_KEY
-        return res ^ (1+self.current)
+                res = (3 * res + self.board[x][y]) % HASH_KEY
+        return res ^ (1 + self.current)
