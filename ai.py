@@ -37,6 +37,8 @@ AICONFIG = [
     (8, 18, 4)
 ]
 
+DIRECTIONS = [(x - 1, y - 1) for i in range(3) for y, x in enumerate([i]*3)]
+
 
 class Reversi_AI:
     def __init__(self):
@@ -45,6 +47,7 @@ class Reversi_AI:
         self.maxDepth = None
         self.final = 16
         self.aiLevel = 8
+        self.saveState = dict()
         self.setLevel()
 
     def heuristicEval_0(self, game, player):
@@ -85,8 +88,7 @@ class Reversi_AI:
                 if chess == EMPTY:
                     continue
                 liberty = 0
-                for dx in [-1, 0, 1]:
-                    for dy in [-1, 0, 1]:
+                for dx, dy in DIRECTIONS:
                         tx, ty = x + dx, y + dy
                         if 0 <= tx < BS and 0 <= ty < BS and board[tx][ty] == EMPTY:
                             liberty += 1
@@ -189,13 +191,22 @@ class Reversi_AI:
 
     def getHeuristicScore(self, game, player, step):
         game.put(step)
-        score = self.heuristicScore(game, player)
+        try:
+            score = self.saveState[game]
+        except KeyError:
+            score = self.heuristicScore(game, player)
+            self.saveState[game] = score
         game.undo()
         return score
 
     def heuristicSearch(self, game, player, depth, alpha, beta):
         if depth <= 0:
-            return self.heuristicScore(game, player), ()
+            try:
+                return self.saveState[game]
+            except KeyError:
+                score = self.heuristicScore(game, player)
+                self.saveState[game] = score
+                return score
 
         maxMode = (game.current == BLACK)
         score = -inf - 1 if maxMode else inf + 1
@@ -284,6 +295,9 @@ class Reversi_AI:
         self.aiLevel = level
         self.depth, self.final, evalLevel = AICONFIG[level]
         self.heuristicScore = getattr(self, "heuristicEval_" + str(evalLevel))
+
+        # Clear saved states
+        self.saveState.clear()
 
     def findBestStep(self, game):
         player = game.current
