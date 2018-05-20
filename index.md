@@ -6,6 +6,9 @@ PyReversi has 5 different evaluation functions built in, and when combined with 
 
 If you can beat TaoKY, you're unarguably The Master of Reversi.
 
+I [wrote a blog][blog] about this game.
+
 ### [Get the latest download]({{ site.github.repository_url }}/releases/latest)
 
   [w]: https://en.wikipedia.org/wiki/Reversi
+  [blog]: https://ibug.github.io/p/6
