@@ -22,7 +22,7 @@ ind_margin = (IND_BOARD_SIZE - IND_SIZE) // 2
 class ReversiUI(QWidget):
     def __init__(self):
         self.game = reversi.Reversi()
-        self.ai = ai.Reversi_AI()
+        self.ai = ai
         self.ai.setLevel(0)
         self.humanSide = reversi.BLACK
 
@@ -95,7 +95,7 @@ class ReversiUI(QWidget):
         if self.humanTurn:
             return
         print("ai moving:")
-        aiMove = self.ai.findBestStep(self.game.copy())
+        aiMove = self.ai.findBestStep(self.game)
         print("aiMove: {}".format(aiMove))
         if aiMove == ():
             return
