@@ -3,7 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 import reversi
-import ai
+import ai_adapter
 
 
 # Constants that will affect how it looks
@@ -23,7 +23,7 @@ ind_margin = (IND_BOARD_SIZE - IND_SIZE) // 2
 class ReversiUI(QWidget):
     def __init__(self):
         self.game = reversi.Reversi()
-        self.ai = ai
+        self.ai = ai_adapter
         self.ai.setLevel(0)
         self.humanSide = reversi.BLACK
 
