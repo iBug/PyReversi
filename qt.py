@@ -223,8 +223,10 @@ class PaintArea(QWidget):
         self.setAutoFillBackground(True)
         self.setMinimumSize(BOARD_SIZE, BOARD_SIZE)
 
-        self.penConfig = [Qt.black, 2, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin)]
-        self.noPen = QPen(Qt.black, 2, Qt.PenStyle(Qt.NoPen), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
+        self.penConfig = \
+            [Qt.black, 2, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin)]
+        self.noPen = \
+            QPen(Qt.black, 2, Qt.PenStyle(Qt.NoPen), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
         brushColorFrame = QFrame()
         brushColorFrame.setAutoFillBackground(True)
         brushColorFrame.setPalette(QPalette(Qt.white))
@@ -304,7 +306,8 @@ class ScoreIndicator(QWidget):
         super(ScoreIndicator, self).__init__()
         self.color = color
         self.number = None
-        self.borderPen = QPen(Qt.black, 3, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
+        self.borderPen = \
+            QPen(Qt.black, 3, Qt.PenStyle(Qt.SolidLine), Qt.PenCapStyle(Qt.RoundCap), Qt.PenJoinStyle(Qt.MiterJoin))
 
         self.setAutoFillBackground(False)
         self.setMinimumSize(IND_BOARD_SIZE, IND_BOARD_SIZE)

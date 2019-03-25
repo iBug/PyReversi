@@ -1,4 +1,5 @@
-# While these are written as constants, there's no guarantee that the program will continue to work if any of them is changed
+# While these are written as constants,
+# there's no guarantee that the program will continue to work if any of them is changed
 
 BS = 8  # Board size
 
