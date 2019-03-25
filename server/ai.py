@@ -10,15 +10,16 @@ inf = 999999  # Don't use math.inf
 MIN_NODES = 10000
 MIN_TICK = 1000
 
+# flake8 ............
 SCORE = [
-    [  500, -150, 30, 10, 10, 30, -150,  500],
-    [ -150, -250,  0,  0,  0,  0, -250, -150],
-    [   30,    0,  1,  2,  2,  1,    0,   30],
-    [   10,    0,  2, 16, 16,  2,    0,   30],
-    [   10,    0,  2, 16, 16,  2,    0,   30],
-    [   30,    0,  1,  2,  2,  1,    0,   30],
-    [ -150, -250,  0,  0,  0,  0, -250, -150],
-    [  500, -150, 30, 10, 10, 30, -150,  500]
+    [  500, -150, 30, 10, 10, 30, -150,  500],  # noqa: E201, E241
+    [ -150, -250,  0,  0,  0,  0, -250, -150],  # noqa: E201, E241
+    [   30,    0,  1,  2,  2,  1,    0,   30],  # noqa: E201, E241
+    [   10,    0,  2, 16, 16,  2,    0,   30],  # noqa: E201, E241
+    [   10,    0,  2, 16, 16,  2,    0,   30],  # noqa: E201, E241
+    [   30,    0,  1,  2,  2,  1,    0,   30],  # noqa: E201, E241
+    [ -150, -250,  0,  0,  0,  0, -250, -150],  # noqa: E201, E241
+    [  500, -150, 30, 10, 10, 30, -150,  500],  # noqa: E201, E241
 ]
 
 BONUS = 30
@@ -37,7 +38,7 @@ AICONFIG = [
     (8, 18, 4)
 ]
 
-DIRECTIONS = [(x - 1, y - 1) for i in range(3) for y, x in enumerate([i]*3)]
+DIRECTIONS = [(x - 1, y - 1) for i in range(3) for y, x in enumerate([i] * 3)]
 
 
 class ReversiAI:
@@ -49,6 +50,13 @@ class ReversiAI:
         self.aiLevel = 8
         self.saveState = dict()
         self.setLevel()
+
+    # Heuristic Reversi game evaluation methods, chosen at different difficulties
+    # Some are more complex than others!
+    #
+    # Reference implementations:
+    # https://yshan.github.io/othello/ (see JavaScript source code)
+    # http://www.codeceo.com/article/android-reversi-game.html
 
     def heuristicEval_0(self, game, player):
         _, s1, s2 = game.chessCount

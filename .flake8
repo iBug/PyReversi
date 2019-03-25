@@ -1,3 +1,4 @@
 [flake8]
-ignore = E501, F403, F405
-exclude = .git/*, env/*, ai.py
+ignore = F403, F405
+exclude = .git/*, env/*
+max-line-length = 120

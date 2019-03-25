@@ -1,10 +1,15 @@
 import requests
 
 
+# This should be the port the Flask server is listening to
+# It's recommended to run the server with PyPy for its performance boost
 SERVER = "http://127.0.0.1:5000"
 
 
 def setLevel(level):
+    """
+    Set difficulty level of AI algorithm
+    """
     # Construct POST data
     payload = {
         'action': "set_difficulty",
@@ -20,6 +25,9 @@ def setLevel(level):
 
 
 def findBestStep(game):
+    """
+    Send current board to the server and retrieve the "best move"
+    """
     # Construct POST data
     payload = {
         'action': "get_move",
@@ -32,4 +40,4 @@ def findBestStep(game):
     try:
         return response["move"]["x"], response["move"]["y"]
     except KeyError:
-        return ()
+        return ()  # Something bad?
