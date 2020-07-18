@@ -1,0 +1,27 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    - name: Install dependencies
+      run: |
+        pip3 install -Ur requirements.txt
+        pip3 install -U pytest-cov coveralls
+    - name: Lint code
+      run: flake8 ./ || true
+    - name: Pytest
+      run: python3 -W default::Warning -m pytest test --cov=reversi
+    - name: Coveralls
+      run: coveralls
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
